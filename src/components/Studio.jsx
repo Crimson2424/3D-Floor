@@ -60,7 +60,7 @@ export function Studio(props) {
         receiveShadow
         geometry={nodes.Plane.geometry}
       >
-        <meshStandardMaterial color={color} lightMap={planTexture}/>
+        <meshStandardMaterial color={'#d8cdbe'} lightMap={planTexture}/>
       </mesh>
       <mesh
         castShadow
