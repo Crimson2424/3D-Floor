@@ -3,7 +3,7 @@ import { MeshReflectorMaterial, MeshRefractionMaterial, useGLTF, useTexture } fr
 import * as THREE from 'three'
 
 export function Studio(props) {
-  const { nodes, materials } = useGLTF("models/studio-baked2-v1.glb");
+  const { nodes, materials } = useGLTF("models/studio-baked-final-v1.glb");
 
   //Plane texture
   const planTexture = useTexture("textures/Plane2.png");
@@ -15,7 +15,7 @@ export function Studio(props) {
 
 
   //Base texture
-  const baseTexture = useTexture("textures/editedBase3.png");
+  const baseTexture = useTexture("textures/Base.png");
   baseTexture.flipY = false;
 
 
@@ -29,7 +29,13 @@ export function Studio(props) {
   const goldTexture = useTexture("textures/Gold.png");
   goldTexture.flipY = false;
 
+  //Sofa texture
+  const sofaTexture = useTexture("textures/Sofa.png");
+  sofaTexture.flipY = false;
 
+  //Bed texture
+  const bedTexture = useTexture("textures/Bed.png")
+  bedTexture.flipY = false
 
   
   // useEffect(() => {
@@ -54,7 +60,18 @@ export function Studio(props) {
         receiveShadow
         geometry={nodes.Base.geometry}
       >
-        <meshBasicMaterial map={baseTexture} side={THREE.DoubleSide}/>
+        <meshBasicMaterial map={baseTexture}/>
+      </mesh>
+      <mesh castShadow receiveShadow geometry={nodes.Bed.geometry}>
+      <meshBasicMaterial map={bedTexture}/>
+      </mesh>
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Sofa.geometry}
+        material={nodes.Sofa.material}
+      >
+        <meshBasicMaterial map={sofaTexture}/>
       </mesh>
       <mesh
         castShadow
@@ -82,4 +99,4 @@ export function Studio(props) {
   );
 }
 
-useGLTF.preload("models/studio-baked-v1.glb");
+useGLTF.preload("models/studio-baked-final-v1.glb");
