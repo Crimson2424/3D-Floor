@@ -30,7 +30,7 @@ const FLOOR_LENGHT = floors.length;
 
 const SEPERATION_DISTANCE = (2 * Math.PI) / FLOOR_LENGHT;
 
-const RADIUS = 17; // circle radius
+const RADIUS = 40; // circle radius
 
 const Experience = () => {
   const modelsRef = useRef([]);
@@ -46,21 +46,21 @@ const Experience = () => {
 
   const { posX, posY, posZ } = useControls({
     posX: {
-      value: -1,
-      max: 100,
-      min: -100,
+      value: -0.6,
+      max: 50,
+      min: -50,
       step: 0.1,
     },
     posY: {
-      value: 8,
-      max: 100,
-      min: -100,
+      value: 31,
+      max: 50,
+      min: -50,
       step: 0.1,
     },
     posZ: {
-      value: -10,
-      max: 100,
-      min: -100,
+      value:  -6.2,
+      max: 50,
+      min: -50,
       step: 0.1,
     },
   });
@@ -310,7 +310,7 @@ const Experience = () => {
           ref={cameraRef}
           makeDefault
           position={[posX, posY, posZ]}
-          zoom={115}
+          zoom={100}
         />
         <ScreenEffect ref={screenEffectRef} />
         {/* <Controls camera={cameraRef} pointerRef={pointerRef} /> */}

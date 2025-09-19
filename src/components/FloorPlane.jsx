@@ -55,7 +55,7 @@ export default function FloorPlane({
       ) : ( */}
         // fallback simple material
       {/* )} */}
-        <meshBasicMaterial color={"#adaaaa"} metalness={0} roughness={1} />
+        <meshBasicMaterial color={"#BAB2AA"} metalness={0} roughness={1} />
     </mesh>
   );
 }

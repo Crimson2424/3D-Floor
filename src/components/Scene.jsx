@@ -16,19 +16,19 @@ const Scene = ({
   const { LookX, LookY, LookZ, } =
     useControls({
       LookX: {
-        value: 16.46545430938,
+        value: 45.00,
         max: 100,
         min: -100,
         step: 0.001,
       },
       LookY: {
-        value: 1.5003375613199273,
+        value: -3.52,
         max: 100,
         min: -100,
         step: 0.001,
       },
       LookZ: {
-        value: -4.7443977519556366,
+        value: 0.61,
         max: 100,
         min: -100,
         step: 0.001,
@@ -45,6 +45,10 @@ const Scene = ({
     // If using OrbitControls, also update its target
   }, [camera.current, LookX, LookY, LookZ]);
 
+  useFrame(()=>{
+    // console.log(camera.current)
+  })
+
   const pointerRef = useRef({ x: 0, y: 0 });
   const targetRotationRef = useRef({ x: 0, y: 0, z: 0 });
 
@@ -55,7 +59,7 @@ const Scene = ({
 
       // yaw (left-right), based on base angle
       targetRotationRef.current.y =
-        pointerRef.current.x * Math.PI * 0.002 + anglesRef.current[current];
+        pointerRef.current.x * Math.PI * 0.02 + anglesRef.current[current];
 
       // pitch (up-down)
       targetRotationRef.current.x = pointerRef.current.y * Math.PI * 0.002;
@@ -108,14 +112,16 @@ const Scene = ({
        
 
         return (
+          
           <group
             key={ind}
             position={[x, y, z]} // now arranged around circle in XZ plane
             ref={(el) => (modelsRef.current[ind] = el)}
             rotation={[0, anglesRef.current[ind], 0]} // makes each face the circle center
           >
-            
+            <group rotation={[0, Math.PI/5, 0]}> 
               <Model />
+            </group>
           </group>
         );
       })}
