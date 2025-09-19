@@ -1,12 +1,19 @@
 import React, { useEffect } from "react";
 import { MeshReflectorMaterial, MeshRefractionMaterial, useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from 'three'
+import { useControls } from "leva";
 
 export function Studio(props) {
   const { nodes, materials } = useGLTF("models/studio-baked-final-v1.glb");
 
+  const {color} = useControls({
+    color:{
+      value: '#BCB4AC'
+    }
+  })
+
   //Plane texture
-  const planTexture = useTexture("textures/Plane2.png");
+  const planTexture = useTexture("textures/Plane_SHADOW.png");
   planTexture.flipY = false;
   
   //Floor texture
@@ -53,7 +60,7 @@ export function Studio(props) {
         receiveShadow
         geometry={nodes.Plane.geometry}
       >
-        <meshBasicMaterial map={planTexture}/>
+        <meshStandardMaterial color={color} lightMap={planTexture}/>
       </mesh>
       <mesh
         castShadow
