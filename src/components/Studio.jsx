@@ -6,42 +6,42 @@ import { useControls } from "leva";
 export function Studio(props) {
   const { nodes, materials } = useGLTF("models/studio-baked-final-v1.glb");
 
-  const {color} = useControls({
-    color:{
-      value: '#BCB4AC'
-    }
-  })
+  // const {color} = useControls({
+  //   color:{
+  //     value: '#BCB4AC'
+  //   }
+  // })
 
   //Plane texture
-  const planTexture = useTexture("textures/Plane_SHADOW.png");
+  const planTexture = useTexture("textures/Plane_SHADOW.webp");
   planTexture.flipY = false;
   
   //Floor texture
-  const floorTex = useTexture("textures/Floor.png");
+  const floorTex = useTexture("textures/Floor.webp");
   floorTex.flipY = false;
 
 
   //Base texture
-  const baseTexture = useTexture("textures/Base.png");
+  const baseTexture = useTexture("textures/Base.webp");
   baseTexture.flipY = false;
 
 
   //Glass texture
-  const glassTexture = useTexture("textures/Glass.png");
+  const glassTexture = useTexture("textures/Glass.webp");
   glassTexture.flipY = false;
 
 
 
   //Gold texture
-  const goldTexture = useTexture("textures/Gold.png");
+  const goldTexture = useTexture("textures/Gold.webp");
   goldTexture.flipY = false;
 
   //Sofa texture
-  const sofaTexture = useTexture("textures/Sofa.png");
+  const sofaTexture = useTexture("textures/Sofa.webp");
   sofaTexture.flipY = false;
 
   //Bed texture
-  const bedTexture = useTexture("textures/Bed.png")
+  const bedTexture = useTexture("textures/Bed.webp")
   bedTexture.flipY = false
 
   

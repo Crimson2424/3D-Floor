@@ -1,7 +1,14 @@
 // Experience.jsx
 import { Canvas } from "@react-three/fiber";
-import { Center, OrbitControls, OrthographicCamera } from "@react-three/drei";
-import React, { useState, useRef, useEffect } from "react";
+import {
+  Center,
+  Loader,
+  OrbitControls,
+  OrthographicCamera,
+  Preload,
+  useProgress,
+} from "@react-three/drei";
+import React, { useState, useRef, useEffect, Suspense } from "react";
 import gsap from "gsap";
 import { OneBHK } from "./OneBHK";
 import { TwoBHK } from "./TwoBHK";
@@ -43,27 +50,31 @@ const Experience = () => {
   const [current, setCurrent] = useState(0);
   const screenEffectRef = useRef();
   const [disableBtn, setDisableBtn] = useState(false);
+  const currentFloorRef = useRef(null);
+  const nextFloorRef = useRef(null);
+  const { progress } = useProgress()
+  const [ready, setReady] = useState(false)
 
-  const { posX, posY, posZ } = useControls({
-    posX: {
-      value: -0.6,
-      max: 50,
-      min: -50,
-      step: 0.1,
-    },
-    posY: {
-      value: 31,
-      max: 50,
-      min: -50,
-      step: 0.1,
-    },
-    posZ: {
-      value:  -6.2,
-      max: 50,
-      min: -50,
-      step: 0.1,
-    },
-  });
+  // const { posX, posY, posZ } = useControls({
+  //   posX: {
+  //     value: -0.6,
+  //     max: 50,
+  //     min: -50,
+  //     step: 0.1,
+  //   },
+  //   posY: {
+  //     value: 31,
+  //     max: 50,
+  //     min: -50,
+  //     step: 0.1,
+  //   },
+  //   posZ: {
+  //     value:  -6.2,
+  //     max: 50,
+  //     min: -50,
+  //     step: 0.1,
+  //   },
+  // });
 
   // console.log(cameraRef?.current);
 
@@ -81,21 +92,14 @@ const Experience = () => {
 
     setDisableBtn(true);
 
-    screenEffectRef.current.playTransition({
-      fadeInDur: 1,
-      holdDur: 1,
-      fadeOutDur: 1,
-      onMidway: () => {
-        // rotate circular group at peak dissolve
-        gsap.to(circleGroupRef.current.rotation, {
-          y: circleGroupRef.current.rotation.y + offset,
-          duration: 2,
-          ease: "power1.inOut",
-          onComplete: () => setDisableBtn(false),
-        });
-        setCurrent(floor);
-      },
+    // rotate circular group at peak dissolve
+    gsap.to(circleGroupRef.current.rotation, {
+      y: circleGroupRef.current.rotation.y + offset,
+      duration: 2,
+      ease: "power1.inOut",
+      onComplete: () => setDisableBtn(false),
     });
+    setCurrent(floor);
   };
 
   //ripple animation
@@ -248,6 +252,7 @@ const Experience = () => {
                 floors[getNext(targetIndex)].name;
             }
           });
+
       }
 
       // --- Animate RIGHT (Next) ---
@@ -274,7 +279,33 @@ const Experience = () => {
                 floors[getPrev(targetIndex)].name;
             }
           });
+
+        
       }
+
+      // --- Animate BOTTOM (Current label) ---
+    if (currentFloorRef.current && nextFloorRef.current) {
+      const currentEl = currentFloorRef.current;
+      const nextEl = nextFloorRef.current;
+
+      nextEl.textContent = floors[targetIndex].name;
+
+      const fromY = direction === "next" ? 40 : -40;
+      const toY = direction === "next" ? -40 : 40;
+
+      gsap.set(nextEl, { y: fromY, opacity: 1, zIndex: 2 });
+
+      gsap
+        .timeline()
+        .to(currentEl, { y: toY, duration: 0.4, ease: "power2.inOut" }, 0)
+        .to(nextEl, { y: 0, duration: 0.4, ease: "power2.inOut" }, 0)
+        .eventCallback("onComplete", () => {
+          currentEl.textContent = floors[targetIndex].name;
+          gsap.set(currentEl, { y: 0, opacity: 1, zIndex: 1 });
+          gsap.set(nextEl, { opacity: 0 });
+        });
+    }
+
       // ✅ finally switch floor AFTER animation
       switchTo(targetIndex);
       setTargetIndex(null);
@@ -293,8 +324,10 @@ const Experience = () => {
     setTargetIndex(getPrev(current));
   };
 
-
   useEffect(() => {
+    if (currentFloorRef.current) {
+      currentFloorRef.current.textContent = floors[current].name;
+    }
     if (prevCurrentRef.current) {
       prevCurrentRef.current.textContent = floors[getPrev(current)].name;
     }
@@ -303,14 +336,60 @@ const Experience = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!cameraRef.current) return
+    console.log('update')
+  
+    const updateCamera = () => {
+      // const aspect = window.innerWidth / window.innerHeight
+      // const frustumHeight = 90 // adjust this to control base view height
+  
+      // cameraRef.current.top = frustumHeight / 2
+      // cameraRef.current.bottom = -frustumHeight / 2
+      // cameraRef.current.left = (-frustumHeight * aspect) / 2
+      // cameraRef.current.right = (frustumHeight * aspect) / 2
+      const w = window.innerWidth
+
+      if(w>0){
+        cameraRef.current.zoom = 30
+      }
+
+      if(w>768){
+        cameraRef.current.zoom = 35
+      }
+
+      if(w>1024){
+        cameraRef.current.zoom = 55
+      }
+
+      if(w>1280){
+        cameraRef.current.zoom = 70
+      }
+
+      if(w>1536){
+        cameraRef.current.zoom = 85
+      }
+  
+      cameraRef.current.updateProjectionMatrix()
+
+      
+    }
+  
+    window.addEventListener("resize", updateCamera)
+    updateCamera() // run on mount
+    
+  
+    return () => window.removeEventListener("resize", updateCamera)
+  }, [cameraRef.current])
+
   return (
     <>
       <Canvas>
         <OrthographicCamera
           ref={cameraRef}
           makeDefault
-          position={[posX, posY, posZ]}
-          zoom={100}
+          position={[-0.6, 31, -6.2]}
+          // zoom={85}
         />
         <ScreenEffect ref={screenEffectRef} />
         {/* <Controls camera={cameraRef} pointerRef={pointerRef} /> */}
@@ -323,17 +402,22 @@ const Experience = () => {
           repeat={[40, 40]}
           position={[0, -2, 0]}
         />
-        <Scene
-          camera={cameraRef}
-          pointerRef={pointerRef}
-          circleGroupRef={circleGroupRef}
-          floors={floors}
-          RADIUS={RADIUS}
-          modelsRef={modelsRef}
-          FLOOR_LENGHT={FLOOR_LENGHT}
-          current={current}
-        />
+        <Suspense fallback={null}>
+          <Scene
+            camera={cameraRef}
+            pointerRef={pointerRef}
+            circleGroupRef={circleGroupRef}
+            floors={floors}
+            RADIUS={RADIUS}
+            modelsRef={modelsRef}
+            FLOOR_LENGHT={FLOOR_LENGHT}
+            current={current}
+          />
+          <Preload all />
+        </Suspense>
       </Canvas>
+
+      <Loader />
 
       {/* Prev Button */}
 
@@ -372,10 +456,20 @@ const Experience = () => {
             className="absolute uppercase w-full text-end text-nowrap"
           ></span>
         </div>
-        <SlArrowRight className="text-2xl self-end"/>
+        <SlArrowRight className="text-2xl self-end" />
       </button>
 
-      
+      <div className="font-zap fixed left-0 top-10 text-2xl h-6 w-full overflow-hidden flex justify-center mb-2 text-gray-900">
+          <span
+            ref={currentFloorRef}
+            className="absolute uppercase text-center  tracking-wide"
+          >
+          </span>
+          <span
+            ref={nextFloorRef}
+            className="absolute uppercase text-center tracking-wide opacity-0"
+          ></span>
+        </div>
 
       {/* Main Navigation  */}
       <div
@@ -398,6 +492,7 @@ const Experience = () => {
           // backgroundColor: "rgba(103,84,48,0.3)",
         }}
       >
+        
         <button
           onMouseEnter={(e) => rippleMouseMove(e, e.currentTarget)}
           onMouseLeave={(e) => rippleMouseLeave(e, e.currentTarget)}
@@ -428,45 +523,6 @@ const Experience = () => {
         >
           Go Back
         </button>
-        {/* {floors.map((btn, ind) => {
-          return (
-            <div className="flex items-center">
-              <button
-                ref={(el) => {
-                  if (el) buttonRefs.current[btn.name] = el;
-                }}
-                onMouseEnter={(e) => rippleMouseMove(e, e.currentTarget)}
-                onMouseLeave={(e) => rippleMouseLeave(e, e.currentTarget)}
-                onClick={(e) => {
-                  if (disableBtn) return;
-                  const container = containerRef.current;
-                  if (container) {
-                    const rect = container.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    animateGradientFromPoint(x, y, btn.name);
-                  }
-                  handleDirect(ind); // 🔑 instead of switchTo(ind)
-                }}
-                className={`dropbox-btn font-zap uppercase overflow-hidden text-shadow-lg p-1 px-3 rounded-2xl transition-all duration-300 cursor-pointer relative 
-                  max-sm:px-1 max-sm:p-0.5 max-sm:text-[8px] 
-                  max-md:px-2 max-md:p-1 max-md:text-[10px] 
-                  max-lg:px-2 max-lg:p-1 max-lg:text-[12px]
-                  max-xl:px-2 max-xl:p-1 max-xl:text-[12px]
-                  max-2xl:px-2 max-2xl:p-1 max-2xl:text-[14px]  text-white`}
-                style={
-                  current === ind
-                    ? {
-                        backgroundColor: "#404566", ///////
-                      }
-                    : {}
-                }
-              >
-                {btn.name.toUpperCase()}
-              </button>
-            </div>
-          );
-        })} */}
       </div>
     </>
   );

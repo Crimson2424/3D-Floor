@@ -1,50 +1,122 @@
-import React, { useRef } from 'react'
-import { useGLTF } from '@react-three/drei'
+import React, { useRef } from "react";
+import { useGLTF, useTexture } from "@react-three/drei";
 
 export function TwoBHK(props) {
-  const { nodes, materials } = useGLTF('models/Base_Floor_1BHK-v1.glb')
+  const { nodes, materials } = useGLTF("models/2BHK_Final-v1.glb");
+
+  //Bed_Lamp_Cabin texture
+  const bedLampTexture = useTexture("textures/2BHK_Bakes/Texture_Set_1.webp");
+  bedLampTexture.flipY = false;
+
+  //Bedroom2 and Study Desk texture
+  const bedroom2Texture = useTexture("textures/2BHK_Bakes/Texture_Set_2.webp");
+  bedroom2Texture.flipY = false;
+
+  //Bedroom and Sofa_DiningTable texture
+  const bedroomTexture = useTexture("textures/2BHK_Bakes/Texture_Set_3.webp");
+  bedroomTexture.flipY = false;
+
+  //Dish_Stove, firdge_Washing_Machine, Retopo_Plant_Balcony and Sink texture
+  const setfourthTexture = useTexture("textures/2BHK_Bakes/Texture_Set_4.webp");
+  setfourthTexture.flipY = false;
+
+  //Floor, Golden, and Table_Chair_Balcony
+  const setFifthTexture = useTexture("textures/2BHK_Bakes/Texture_Set_5.webp");
+  setFifthTexture.flipY = false;
+
+  //Base
+  const setSixthTexture = useTexture("textures/2BHK_Bakes/Texture_Set_6_2.webp");
+  setSixthTexture.flipY = false;
+
+   //Glass
+   const setGlassTexture = useTexture("textures/2BHK_Bakes/Texture_Set_Glass.webp");
+   setGlassTexture.flipY = false;
+
+   //Plane shadow
+   const setPlaneTexture = useTexture("textures/2BHK_Bakes/Plane.webp");
+   setPlaneTexture.flipY = false;
+
   return (
-    <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Walls_1.geometry}
-        // material={materials.Main_walls}
-      >
-        <meshBasicMaterial />
+    <group {...props} dispose={null} position={[1, 0, -1]} rotation={[0,Math.PI,0]}>
+      <mesh castShadow receiveShadow geometry={nodes.Bed_Lamp_Cabin.geometry}>
+        <meshBasicMaterial map={bedLampTexture} />
+      </mesh>
+      <mesh castShadow receiveShadow geometry={nodes.Bedroom2.geometry}>
+        <meshBasicMaterial map={bedroom2Texture} />
+      </mesh>
+      <mesh castShadow receiveShadow geometry={nodes.Study_Desk.geometry}>
+        <meshBasicMaterial map={bedroom2Texture} />
+      </mesh>
+      <mesh castShadow receiveShadow geometry={nodes.bedroom.geometry}>
+        <meshBasicMaterial map={bedroomTexture} />
+      </mesh>
+      <mesh castShadow receiveShadow geometry={nodes.Sofa_DiningTable.geometry}>
+        <meshBasicMaterial map={bedroomTexture} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Walls_2.geometry}
-        material={materials.Material___2147483638}
-      />
+        geometry={nodes.Retopo_Plant_Balcony.geometry}
+      >
+        <meshBasicMaterial map={setfourthTexture} />
+      </mesh>
+      <mesh castShadow receiveShadow geometry={nodes.Dishe_Stove.geometry}>
+        <meshBasicMaterial map={setfourthTexture} />
+      </mesh>
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Floor_1.geometry}
-        material={materials.Material__2147482900}
-      />
+        geometry={nodes.fridge_Washing_Machine.geometry}
+      >
+        <meshBasicMaterial map={setfourthTexture} />
+      </mesh>
+      <mesh castShadow receiveShadow geometry={nodes.Sink.geometry}>
+        <meshBasicMaterial map={setfourthTexture} />
+      </mesh>
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Floor_2.geometry}
-        material={materials.Material__2147482921}
-      />
+        geometry={nodes.Table_Chair_Balcony.geometry}
+      >
+        <meshBasicMaterial map={setFifthTexture} />
+      </mesh>
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Windows_1.geometry}
-        material={materials.Glass_Clear}
-      />
+        geometry={nodes.Floor.geometry}
+        >
+        <meshBasicMaterial map={setFifthTexture} />
+      </mesh>
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Windows_2.geometry}
-        material={materials.Material__2147482897}
-      />
+        geometry={nodes.Golden.geometry}
+        >
+        <meshBasicMaterial map={setFifthTexture} />
+      </mesh>
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Base.geometry}
+      >
+        <meshBasicMaterial map={setSixthTexture} />
+      </mesh>
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Glass.geometry}
+        >
+        <meshBasicMaterial map={setGlassTexture} />
+      </mesh>
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Plane.geometry}
+        >
+        <meshBasicMaterial color={'#d0c6b7'} aoMap={setPlaneTexture} />
+      </mesh>
     </group>
-  )
+  );
 }
 
-useGLTF.preload('models/Base_Floor_1BHK-v1.glb')
+useGLTF.preload("models/2BHK_Final-v1.glb");
