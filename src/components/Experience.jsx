@@ -423,7 +423,11 @@ const Experience = () => {
       <button
         disabled={disableBtn}
         onClick={handlePrev}
-        className="font-zap cursor-pointer fixed left-8 top-1/2 -translate-y-1/2 text-xl h-14 min-w-50 w-fit overflow-hidden flex flex-col"
+        className="font-zap cursor-pointer fixed left-8 top-1/2 -translate-y-1/2 text-xl h-14 min-w-50 w-fit overflow-hidden flex flex-col
+          max-sm:text-sm max-sm:left-4 max-sm:h-10
+          max-md:text-sm max-md:left-5 max-md:h-10
+          max-lg:text-lg max-lg:left-6
+        "
       >
         <div className="relative h-full w-full overflow-hidden flex flex-col ">
           <span
@@ -443,7 +447,11 @@ const Experience = () => {
       <button
         disabled={disableBtn}
         onClick={handleNext}
-        className="font-zap cursor-pointer fixed right-8 top-1/2 -translate-y-1/2 text-xl h-14 min-w-50 w-fit overflow-hidden flex flex-col"
+        className="font-zap cursor-pointer fixed right-8 top-1/2 -translate-y-1/2 text-xl h-14 min-w-50 w-fit overflow-hidden flex flex-col
+        max-sm:text-sm max-sm:right-4 max-sm:h-10
+         max-md:text-sm max-md:right-5 max-md:h-10
+         max-lg:text-lg max-lg:right-6
+        "
       >
         <div className="relative h-full  w-full overflow-hidden flex flex-col">
           <span
@@ -455,10 +463,13 @@ const Experience = () => {
             className="absolute uppercase w-full text-end text-nowrap"
           ></span>
         </div>
-        <SlArrowRight className="text-2xl self-end" />
+        <SlArrowRight className="text-2xl self-end " />
       </button>
 
-      <div className="font-zap fixed left-0 top-10 text-2xl h-6 w-full overflow-hidden flex justify-center mb-2 text-gray-900">
+      <div className="font-zap fixed left-0 top-10 text-2xl h-6 w-full overflow-hidden flex justify-center mb-2 text-gray-900
+        max-sm:text-sm max-sm:top-4
+        max-md:text-lg max-md:top-5
+      ">
           <span
             ref={currentFloorRef}
             className="absolute uppercase text-center  tracking-wide"
@@ -477,7 +488,7 @@ const Experience = () => {
         onMouseLeave={handleContainerMouseLeave}
         className="drop-container overflow-hidden w-fit h-fit text-nowrap text-white bottom-2 left-1/2 transform -translate-x-1/2 p-1 absolute bg-clip-padding backdrop-blur-sm border-3 border-[#385270]
               rounded-4xl flex justify-center items-center gap-8 
-              max-sm:gap-1 max-sm:bottom-1 max-sm:border-2 max-sm:p-0.5 
+              max-sm:bottom-1 max-sm:border-2 max-sm:p-0.5 
               max-md:gap-0 max-md:bottom-1 max-md:border-2 max-md:p-0.5 max-md:justify-between
               max-lg:gap-0 max-lg:bottom-2 max-lg:border-2 max-lg:p-1 max-lg:justify-between 
               max-xl:p-2 max-xl:gap-0 max-xl:justify-between"

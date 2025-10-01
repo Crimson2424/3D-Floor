@@ -76,7 +76,7 @@ const App = () => {
   };
   return (
     <>
-      {/* {!shouldShowExperience() ? (
+      {!shouldShowExperience() ? (
         <div className="w-full h-full fixed inset-0 flex flex-col gap-3 items-center justify-center bg-black text-white text-xl z-50 p-4 text-center">
           {!isLandscape && (
             <p>Please rotate your device to landscape mode 📱↔️</p>
@@ -95,10 +95,10 @@ const App = () => {
         <div className="w-screen h-screen">
           <Experience />
         </div>
-      )} */}
-      <div className="w-screen h-screen">
+      )}
+      {/* <div className="w-screen h-screen">
           <Experience />
-        </div>
+        </div> */}
     </>
   );
 };
