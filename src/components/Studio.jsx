@@ -3,8 +3,24 @@ import { MeshReflectorMaterial, MeshRefractionMaterial, useGLTF, useTexture } fr
 import * as THREE from 'three'
 import { useControls } from "leva";
 
+// ✅ centralized texture paths
+const texturePaths = {
+  plane: "textures/Studio_2K/Plane_SHADOW.webp",
+  floor: "textures/Studio_2K/Floor.webp",
+  base: "textures/Studio_2K/Base.webp",
+  glass: "textures/Studio_2K/Glass.webp",
+  gold: "textures/Studio_2K/Gold.webp",
+  sofa: "textures/Studio_2K/Sofa.webp",
+  bed: "textures/Studio_2K/Bed.webp",
+}
+
+// ✅ preload textures once
+Object.values(texturePaths).forEach((path) => {
+  useTexture.preload(path)
+})
+
 export function Studio(props) {
-  const { nodes, materials } = useGLTF("models/studio-baked-final-v1.glb");
+  const { nodes } = useGLTF("models/studio-baked-final-v1.glb");
 
   // const {color} = useControls({
   //   color:{
@@ -12,46 +28,20 @@ export function Studio(props) {
   //   }
   // })
 
-  //Plane texture
-  const planTexture = useTexture("textures/Plane_SHADOW.webp");
-  planTexture.flipY = false;
-  
-  //Floor texture
-  const floorTex = useTexture("textures/Floor.webp");
-  floorTex.flipY = false;
+ // ✅ load all textures in one go (single suspension)
+ const textures = useTexture(Object.values(texturePaths))
+ textures.forEach((tex) => (tex.flipY = false))
 
-
-  //Base texture
-  const baseTexture = useTexture("textures/Base.webp");
-  baseTexture.flipY = false;
-
-
-  //Glass texture
-  const glassTexture = useTexture("textures/Glass.webp");
-  glassTexture.flipY = false;
-
-
-
-  //Gold texture
-  const goldTexture = useTexture("textures/Gold.webp");
-  goldTexture.flipY = false;
-
-  //Sofa texture
-  const sofaTexture = useTexture("textures/Sofa.webp");
-  sofaTexture.flipY = false;
-
-  //Bed texture
-  const bedTexture = useTexture("textures/Bed.webp")
-  bedTexture.flipY = false
-
-  
-  // useEffect(() => {
-  //   if (!floorTex || !materials?.floor) return;
-  //   floorTex.flipY = false;
-  //   materials.floor.map = floorTex;
-  //   materials.floor.needsUpdate = true;
-  // }, [floorTex, materials]);
-  
+ // map back for clarity
+ const [
+   planTexture,
+   floorTex,
+   baseTexture,
+   glassTexture,
+   goldTexture,
+   sofaTexture,
+   bedTexture,
+ ] = textures
 
   return (
     <group {...props} dispose={null} rotation={[0, Math.PI, 0]}>

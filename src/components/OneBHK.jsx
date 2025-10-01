@@ -2,6 +2,23 @@ import React, { useRef } from 'react'
 import { useGLTF, useKTX2, useTexture } from '@react-three/drei'
 import { useControls } from 'leva';
 
+// ✅ centralize texture paths
+const texturePaths = {
+  plane: "textures/1BHK_2K/Plane.webp",
+  gold: "textures/1BHK_2K/Gold.webp",
+  livingroom: "textures/1BHK_2K/Livingroom.webp",
+  bedSofa: "textures/1BHK_2K/Bed_Sofa.webp",
+  bedroom: "textures/1BHK_2K/Bedroom.webp", // using ktx2 where possible
+  base: "textures/1BHK_2K/Base.webp",
+  floor: "textures/1BHK_2K/Floor.webp",
+  glass: "textures/1BHK_2K/Glasses.webp",
+}
+
+// ✅ preload all textures
+Object.values(texturePaths).forEach((path) => {
+  useTexture.preload(path)
+})
+
 export function OneBHK(props) {
   const { nodes } = useGLTF('models/1BHK_Baked-v1.glb')
 
@@ -11,46 +28,21 @@ export function OneBHK(props) {
   //   }
   // })
 
-    //Plane texture
-    const planTexture = useTexture("textures/1BHK_Bakes/Plane.webp");
-    planTexture.flipY = false;
+    // load all textures at once → only one suspension
+  const textures = useTexture(Object.values(texturePaths))
+  textures.forEach((tex) => (tex.flipY = false))
 
-    //Gold Texture
-    const goldTexture = useTexture('textures/1BHK_Bakes/Gold.webp')
-    goldTexture.flipY = false;
-
-    //Livingroom Texture
-    const livingroomTexture = useTexture('textures/1BHK_Bakes/Livingroom.webp')
-    livingroomTexture.flipY = false;
-
-    //Livingroom Texture
-    const bedSofaTexture = useTexture('textures/1BHK_Bakes/Bed_Sofa.webp')
-    bedSofaTexture.flipY = false;
-
-    // //Ktx2 Livingroom texture
-    // const bedSofaKtx2 = useKTX2('textures/1BHK_Bakes/Bed_Sofa.ktx2')
-
-    //Livingroom Texture
-    const bedroomTexture = useTexture('textures/1BHK_Bakes/Bedroom.webp')
-    bedroomTexture.flipY = false;
-
-    // //bedroomKtx2 texture
-    // const bedroomKtx2 = useKTX2('textures/1BHK_Bakes/Bedroom.ktx2')
-
-    //base Texture
-    const baseTexture = useTexture('textures/1BHK_Bakes/Base.webp')
-    baseTexture.flipY = false;
-
-    // //Ktx2 Base texture
-    // const baseKtx2 = useKTX2('textures/1BHK_Bakes/Base2.ktx2')
-
-    //Floor Texture
-    const floorTexture = useTexture('textures/1BHK_Bakes/Floor.webp')
-    floorTexture.flipY = false;
-
-    //Glass Texture
-    const glassTexture = useTexture('textures/1BHK_Bakes/Glasses.webp')
-    glassTexture.flipY = false;
+  // map back to names
+  const [
+    planeTexture,
+    goldTexture,
+    livingroomTexture,
+    bedSofaTexture,
+    bedroomTexture,
+    baseTexture,
+    floorTexture,
+    glassTexture,
+  ] = textures
     
 
   return (
@@ -83,7 +75,7 @@ export function OneBHK(props) {
       <mesh
         geometry={nodes.Plane.geometry}
       >
-        <meshBasicMaterial color={'#d0c6b7'} aoMap={planTexture}/>
+        <meshBasicMaterial color={'#d0c6b7'} aoMap={planeTexture}/>
       </mesh>
       <mesh
         geometry={nodes.Floor.geometry}

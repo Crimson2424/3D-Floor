@@ -2,7 +2,6 @@
 import { Canvas } from "@react-three/fiber";
 import {
   Center,
-  Loader,
   OrbitControls,
   OrthographicCamera,
   Preload,
@@ -23,6 +22,7 @@ import Scene from "./Scene";
 import * as THREE from "three";
 import { GoChevronLeft, GoChevronRight } from "react-icons/go";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
+import Loader from "./Loader";
 
 gsap.registerPlugin(useGSAP);
 
@@ -402,7 +402,7 @@ const Experience = () => {
           repeat={[40, 40]}
           position={[0, -2, 0]}
         />
-        <Suspense fallback={null}>
+        <Suspense fallback={<Loader progress={progress}/>}>
           <Scene
             camera={cameraRef}
             pointerRef={pointerRef}
@@ -413,11 +413,10 @@ const Experience = () => {
             FLOOR_LENGHT={FLOOR_LENGHT}
             current={current}
           />
-          <Preload all />
         </Suspense>
       </Canvas>
 
-      <Loader />
+      
 
       {/* Prev Button */}
 

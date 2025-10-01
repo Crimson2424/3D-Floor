@@ -1,55 +1,55 @@
 import React, { useRef } from "react";
 import { useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from 'three'
-import { DissolveMaterial } from "./DissolveMaterial";
-import CustomShaderMaterial from 'three-custom-shader-material'
+
+// ✅ centralized texture paths
+const texturePaths = {
+  mask: "/textures/fbm_noise.png",
+  set1: "textures/3BHK_2K/Texture_Set_1.webp",
+  set2: "textures/3BHK_2K/Texture_Set_2.webp",
+  set3: "textures/3BHK_2K/Texture_Set_3.webp",
+  set4: "textures/3BHK_2K/Texture_Set_4.webp",
+  set5: "textures/3BHK_2K/Texture_Set_5.webp",
+  set6: "textures/3BHK_2K/Texture_Set_6.webp",
+  set7: "textures/3BHK_2K/Texture_Set_7.webp",
+  glass: "textures/3BHK_2K/Texture_Set_Glass.webp",
+  plane: "textures/3BHK_2K/Texture_Set_Plane.webp",
+}
+
+// ✅ preload textures once
+Object.values(texturePaths).forEach((path) => {
+  useTexture.preload(path)
+})
 
 export function ThreeBHK(props) {
   const { nodes } = useGLTF("models/3BHK-v1.glb");
 
-  //Mask texture
-  const maskTex = useTexture("/textures/fbm_noise.png");
-  maskTex.wrapS = maskTex.wrapT = THREE.RepeatWrapping;
-
-  //texture_Set_1 texture
-  const texture_Set_1 = useTexture("textures/3BHK_Bakes/Texture_Set_1.webp");
-  texture_Set_1.flipY = false;
-
-  //texture_Set_1 texture
-  const texture_Set_2 = useTexture("textures/3BHK_Bakes/Texture_Set_2.webp");
-  texture_Set_2.flipY = false;
-
-  //texture_Set_3 texture
-  const texture_Set_3 = useTexture("textures/3BHK_Bakes/Texture_Set_3.webp");
-  texture_Set_3.flipY = false;
-
-  //texture_Set_4 texture
-  const texture_Set_4 = useTexture("textures/3BHK_Bakes/Texture_Set_4.webp");
-  texture_Set_4.flipY = false;
-
-  //texture_Set_5 texture
-  const texture_Set_5 = useTexture("textures/3BHK_Bakes/Texture_Set_5.webp");
-  texture_Set_5.flipY = false;
-
-  //texture_Set_6 texture
-  const texture_Set_6 = useTexture("textures/3BHK_Bakes/Texture_Set_6.webp");
-  texture_Set_6.flipY = false;
-
-  //texture_Set_7 texture
-  const texture_Set_7 = useTexture("textures/3BHK_Bakes/Texture_Set_7.webp");
-  texture_Set_7.flipY = false;
-
-  //texture_Set_Glass texture
-  const texture_Set_Glass = useTexture(
-    "textures/3BHK_Bakes/Texture_Set_Glass.webp"
-  );
-  texture_Set_Glass.flipY = false;
-
-  //texture_Set_Plane texture
-  const texture_Set_Plane = useTexture(
-    "textures/3BHK_Bakes/Texture_Set_Plane.webp"
-  );
-  texture_Set_Plane.flipY = false;
+   // ✅ load all textures in one suspension
+   const textures = useTexture(Object.values(texturePaths))
+   textures.forEach((tex) => {
+     if (tex) {
+       tex.flipY = false
+     }
+   })
+ 
+   // map back for clarity
+   const [
+     maskTex,
+     texture_Set_1,
+     texture_Set_2,
+     texture_Set_3,
+     texture_Set_4,
+     texture_Set_5,
+     texture_Set_6,
+     texture_Set_7,
+     texture_Set_Glass,
+     texture_Set_Plane,
+   ] = textures
+ 
+   // repeat wrapping for mask
+   if (maskTex) {
+     maskTex.wrapS = maskTex.wrapT = THREE.RepeatWrapping
+   }
 
   return (
     <group {...props} dispose={null} scale={0.83} position={[-0.6, 0, -0.8]}>

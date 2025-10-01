@@ -1,40 +1,40 @@
 import React, { useRef } from "react";
 import { useGLTF, useTexture } from "@react-three/drei";
 
+// ✅ Centralized texture paths
+const texturePaths = {
+  bedLamp: "textures/2BHK_2K/Texture_Set_1.webp",
+  bedroom2: "textures/2BHK_2K/Texture_Set_2.webp",
+  bedroom: "textures/2BHK_2K/Texture_Set_3.webp",
+  setFour: "textures/2BHK_2K/Texture_Set_4.webp",
+  setFive: "textures/2BHK_2K/Texture_Set_5.webp",
+  setSix: "textures/2BHK_2K/Texture_Set_6_2.webp",
+  glass: "textures/2BHK_2K/Texture_Set_Glass.webp",
+  plane: "textures/2BHK_2K/Texture_Set_Plane.webp",
+}
+
+// ✅ Preload all textures
+Object.values(texturePaths).forEach((path) => {
+  useTexture.preload(path)
+})
+
 export function TwoBHK(props) {
   const { nodes, materials } = useGLTF("models/2BHK_Final-v1.glb");
 
-  //Bed_Lamp_Cabin texture
-  const bedLampTexture = useTexture("textures/2BHK_Bakes/Texture_Set_1.webp");
-  bedLampTexture.flipY = false;
+  // ✅ Load all textures in one go (single suspension)
+  const textures = useTexture(Object.values(texturePaths))
+  textures.forEach((tex) => (tex.flipY = false))
 
-  //Bedroom2 and Study Desk texture
-  const bedroom2Texture = useTexture("textures/2BHK_Bakes/Texture_Set_2.webp");
-  bedroom2Texture.flipY = false;
-
-  //Bedroom and Sofa_DiningTable texture
-  const bedroomTexture = useTexture("textures/2BHK_Bakes/Texture_Set_3.webp");
-  bedroomTexture.flipY = false;
-
-  //Dish_Stove, firdge_Washing_Machine, Retopo_Plant_Balcony and Sink texture
-  const setfourthTexture = useTexture("textures/2BHK_Bakes/Texture_Set_4.webp");
-  setfourthTexture.flipY = false;
-
-  //Floor, Golden, and Table_Chair_Balcony
-  const setFifthTexture = useTexture("textures/2BHK_Bakes/Texture_Set_5.webp");
-  setFifthTexture.flipY = false;
-
-  //Base
-  const setSixthTexture = useTexture("textures/2BHK_Bakes/Texture_Set_6_2.webp");
-  setSixthTexture.flipY = false;
-
-   //Glass
-   const setGlassTexture = useTexture("textures/2BHK_Bakes/Texture_Set_Glass.webp");
-   setGlassTexture.flipY = false;
-
-   //Plane shadow
-   const setPlaneTexture = useTexture("textures/2BHK_Bakes/Plane.webp");
-   setPlaneTexture.flipY = false;
+  const [
+    bedLampTexture,
+    bedroom2Texture,
+    bedroomTexture,
+    setFourthTexture,
+    setFifthTexture,
+    setSixthTexture,
+    setGlassTexture,
+    setPlaneTexture,
+  ] = textures
 
   return (
     <group {...props} dispose={null} position={[1, 0, -1]} rotation={[0,Math.PI,0]}>
@@ -58,20 +58,20 @@ export function TwoBHK(props) {
         receiveShadow
         geometry={nodes.Retopo_Plant_Balcony.geometry}
       >
-        <meshBasicMaterial map={setfourthTexture} />
+        <meshBasicMaterial map={setFourthTexture} />
       </mesh>
       <mesh castShadow receiveShadow geometry={nodes.Dishe_Stove.geometry}>
-        <meshBasicMaterial map={setfourthTexture} />
+        <meshBasicMaterial map={setFourthTexture} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.fridge_Washing_Machine.geometry}
       >
-        <meshBasicMaterial map={setfourthTexture} />
+        <meshBasicMaterial map={setFourthTexture} />
       </mesh>
       <mesh castShadow receiveShadow geometry={nodes.Sink.geometry}>
-        <meshBasicMaterial map={setfourthTexture} />
+        <meshBasicMaterial map={setFourthTexture} />
       </mesh>
       <mesh
         castShadow
