@@ -1,8 +1,13 @@
-import React, { useRef } from "react";
+import React from "react";
+import * as THREE from "three";
 import { useGLTF, useTexture } from "@react-three/drei";
+import { DissolveMaterial } from "./DissolveMaterial";
+import DissolveMaterialAO from "./DissolveMaterialAO";
+import UpAnimate from "./UpAnimate";
 
 // ✅ Centralized texture paths
 const texturePaths = {
+  mask: "/textures/fbm_noise.png",
   bedLamp: "textures/2BHK_2K/Texture_Set_1.webp",
   bedroom2: "textures/2BHK_2K/Texture_Set_2.webp",
   bedroom: "textures/2BHK_2K/Texture_Set_3.webp",
@@ -19,13 +24,14 @@ Object.values(texturePaths).forEach((path) => {
 })
 
 export function TwoBHK(props) {
-  const { nodes, materials } = useGLTF("models/2BHK_Final-v1.glb");
+  const { nodes } = useGLTF("models/2BHK_Final-v1.glb");
 
   // ✅ Load all textures in one go (single suspension)
   const textures = useTexture(Object.values(texturePaths))
   textures.forEach((tex) => (tex.flipY = false))
 
   const [
+    maskTex,
     bedLampTexture,
     bedroom2Texture,
     bedroomTexture,
@@ -36,84 +42,95 @@ export function TwoBHK(props) {
     setPlaneTexture,
   ] = textures
 
+  // repeat wrapping for mask
+  if (maskTex) {
+    maskTex.wrapS = maskTex.wrapT = THREE.RepeatWrapping;
+  }
+
   return (
     <group {...props} dispose={null} position={[1, 0, -1]} rotation={[0,Math.PI,0]}>
+      <UpAnimate active={props.active} >
+
       <mesh castShadow receiveShadow geometry={nodes.Bed_Lamp_Cabin.geometry}>
-        <meshBasicMaterial map={bedLampTexture} />
-      </mesh>
-      <mesh castShadow receiveShadow geometry={nodes.Bedroom2.geometry}>
-        <meshBasicMaterial map={bedroom2Texture} />
+        <DissolveMaterial map={bedLampTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh castShadow receiveShadow geometry={nodes.Study_Desk.geometry}>
-        <meshBasicMaterial map={bedroom2Texture} />
-      </mesh>
-      <mesh castShadow receiveShadow geometry={nodes.bedroom.geometry}>
-        <meshBasicMaterial map={bedroomTexture} />
+        <DissolveMaterial map={bedroom2Texture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh castShadow receiveShadow geometry={nodes.Sofa_DiningTable.geometry}>
-        <meshBasicMaterial map={bedroomTexture} />
+        <DissolveMaterial map={bedroomTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Retopo_Plant_Balcony.geometry}
       >
-        <meshBasicMaterial map={setFourthTexture} />
-      </mesh>
-      <mesh castShadow receiveShadow geometry={nodes.Dishe_Stove.geometry}>
-        <meshBasicMaterial map={setFourthTexture} />
+        <DissolveMaterial map={setFourthTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.fridge_Washing_Machine.geometry}
       >
-        <meshBasicMaterial map={setFourthTexture} />
-      </mesh>
-      <mesh castShadow receiveShadow geometry={nodes.Sink.geometry}>
-        <meshBasicMaterial map={setFourthTexture} />
+        <DissolveMaterial map={setFourthTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Table_Chair_Balcony.geometry}
       >
-        <meshBasicMaterial map={setFifthTexture} />
+        <DissolveMaterial map={setFifthTexture} mask={maskTex} active={props.active} />
       </mesh>
+      </UpAnimate>
+      <mesh castShadow receiveShadow geometry={nodes.Bedroom2.geometry}>
+        <DissolveMaterial map={bedroom2Texture} mask={maskTex} active={props.active} />
+      </mesh>
+      <mesh castShadow receiveShadow geometry={nodes.bedroom.geometry}>
+        <DissolveMaterial map={bedroomTexture} mask={maskTex} active={props.active} />
+      </mesh>
+      
+      <mesh castShadow receiveShadow geometry={nodes.Dishe_Stove.geometry}>
+        <DissolveMaterial map={setFourthTexture} mask={maskTex} active={props.active} />
+      </mesh>
+      
+      <mesh castShadow receiveShadow geometry={nodes.Sink.geometry}>
+        <DissolveMaterial map={setFourthTexture} mask={maskTex} active={props.active} />
+      </mesh>
+      
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Floor.geometry}
         >
-        <meshBasicMaterial map={setFifthTexture} />
+        <DissolveMaterial map={setFifthTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Golden.geometry}
         >
-        <meshBasicMaterial map={setFifthTexture} />
+        <DissolveMaterial map={setFifthTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Base.geometry}
       >
-        <meshBasicMaterial map={setSixthTexture} />
+        <DissolveMaterial map={setSixthTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Glass.geometry}
         >
-        <meshBasicMaterial map={setGlassTexture} />
+        <DissolveMaterial map={setGlassTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Plane.geometry}
         >
-        <meshBasicMaterial color={'#d0c6b7'} aoMap={setPlaneTexture} />
+        <DissolveMaterialAO active={props.active} color={'#d0c6b7'} aoMap={setPlaneTexture} />
       </mesh>
     </group>
   );

@@ -96,7 +96,7 @@ const Experience = () => {
     gsap.to(circleGroupRef.current.rotation, {
       y: circleGroupRef.current.rotation.y + offset,
       duration: 2,
-      ease: "power1.inOut",
+      ease: "power2.inOut",
       onComplete: () => setDisableBtn(false),
     });
     setCurrent(floor);

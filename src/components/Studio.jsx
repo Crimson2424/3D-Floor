@@ -1,10 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { MeshReflectorMaterial, MeshRefractionMaterial, useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from 'three'
+import { DissolveMaterial } from "./DissolveMaterial";
 import { useControls } from "leva";
+import DissolveMaterialAO from "./DissolveMaterialAO";
+import UpAnimate from "./UpAnimate";
 
 // ✅ centralized texture paths
 const texturePaths = {
+  mask: "/textures/fbm_noise.png",
   plane: "textures/Studio_2K/Plane_SHADOW.webp",
   floor: "textures/Studio_2K/Floor.webp",
   base: "textures/Studio_2K/Base.webp",
@@ -22,11 +26,6 @@ Object.values(texturePaths).forEach((path) => {
 export function Studio(props) {
   const { nodes } = useGLTF("models/studio-baked-final-v1.glb");
 
-  // const {color} = useControls({
-  //   color:{
-  //     value: '#BCB4AC'
-  //   }
-  // })
 
  // ✅ load all textures in one go (single suspension)
  const textures = useTexture(Object.values(texturePaths))
@@ -34,6 +33,7 @@ export function Studio(props) {
 
  // map back for clarity
  const [
+  maskTex,
    planTexture,
    floorTex,
    baseTexture,
@@ -43,6 +43,11 @@ export function Studio(props) {
    bedTexture,
  ] = textures
 
+ // repeat wrapping for mask
+ if (maskTex) {
+  maskTex.wrapS = maskTex.wrapT = THREE.RepeatWrapping;
+}
+
   return (
     <group {...props} dispose={null} rotation={[0, Math.PI, 0]}>
       <mesh
@@ -50,17 +55,19 @@ export function Studio(props) {
         receiveShadow
         geometry={nodes.Plane.geometry}
       >
-        <meshStandardMaterial color={'#d8cdbe'} lightMap={planTexture}/>
+        <DissolveMaterialAO color={'#d0c6b7'} aoMap={planTexture} active={props.active}  />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Base.geometry}
       >
-        <meshBasicMaterial map={baseTexture}/>
+        <DissolveMaterial map={baseTexture} mask={maskTex} active={props.active} />
       </mesh>
+      <UpAnimate active={props.active}>
+
       <mesh castShadow receiveShadow geometry={nodes.Bed.geometry}>
-      <meshBasicMaterial map={bedTexture}/>
+      <DissolveMaterial map={bedTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
@@ -68,14 +75,15 @@ export function Studio(props) {
         geometry={nodes.Sofa.geometry}
         material={nodes.Sofa.material}
       >
-        <meshBasicMaterial map={sofaTexture}/>
+        <DissolveMaterial map={sofaTexture} mask={maskTex} active={props.active} />
       </mesh>
+      </UpAnimate>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Gold.geometry}
       >
-        <meshBasicMaterial map={goldTexture}/>
+        <DissolveMaterial map={goldTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
@@ -83,14 +91,14 @@ export function Studio(props) {
         geometry={nodes.Glass.geometry}
         // material={materials.Glass}
       >
-        <meshBasicMaterial map={glassTexture}/>
+        <DissolveMaterial map={glassTexture} mask={maskTex} active={props.active} />
       </mesh>
       <mesh
         castShadow
         receiveShadow
         geometry={nodes.Floor.geometry}
       >
-        <meshBasicMaterial map={floorTex}/>
+        <DissolveMaterial map={floorTex} mask={maskTex} active={props.active} />
       </mesh>
     </group>
   );

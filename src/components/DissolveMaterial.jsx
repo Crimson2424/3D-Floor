@@ -29,31 +29,62 @@ export function DissolveMaterial({ map, mask, active }) {
 `}
         fragmentShader={`
         
-          uniform sampler2D baseTexture;
-  uniform sampler2D mask;
-  uniform float progress;
-  uniform vec3 dissolveColor;
-  varying vec2 vUv;
+          uniform sampler2D baseTexture;  // iChannel0
+uniform sampler2D mask;         // iChannel1
+uniform vec2 resolution;        // iResolution
+uniform float time;             // iTime
+uniform float progress;         // custom dissolve control
+uniform vec3 dissolveColor; // 🔥 your custom dissolve color
+varying vec2 vUv;
 
-  void main() {
-      vec4 tex = texture2D(baseTexture, vUv);
-    float m = texture2D(mask, vUv).r;
+float sinNoise(vec2 uv) {
+    return fract(abs(sin(uv.x * 180.0 + uv.y * 3077.0) * 53703.27));
+}
 
-    // dissolve threshold
-    float noise1 = texture2D(mask, vUv).r;
-    float noise2 = texture2D(mask, vUv * 2.0).r * 0.5;
-    float combined = clamp(noise1 + noise2, 0.0, 1.0);
-    float cutoff = smoothstep(progress - 0.4, progress + 0.2, combined);
+float valueNoise(vec2 uv, float scale) {
+    vec2 luv = fract(uv * scale);
+    vec2 luvs = smoothstep(0.0, 1.0, fract(uv * scale));
+    vec2 id = floor(uv * scale);
 
-    // edge glow
-    float w = 0.1;
-    float band = step(progress - 0.4, combined) * step(combined, progress + 0.4);
-    float gate = smoothstep(0.0, 0.6, progress) * smoothstep(0.0, 0.6, 1.0 - progress);
-    float edge = band * gate;
-    vec3 color = mix(tex.rgb, dissolveColor, edge);
+    float tl = sinNoise(id + vec2(0.0, 1.0));
+    float tr = sinNoise(id + vec2(1.0, 1.0));
+    float t = mix(tl, tr, luvs.x);
 
-    csm_DiffuseColor = vec4(color, cutoff);
-  }
+    float bl = sinNoise(id + vec2(0.0, 0.0));
+    float br = sinNoise(id + vec2(1.0, 0.0));
+    float b = mix(bl, br, luvs.x);
+
+    return mix(b, t, luvs.y) * 2.0 - 1.0;
+}
+
+void main() {
+    // Normalized pixel coordinates
+    vec2 uv = vUv;
+
+    float scale = 4.0;
+    float fractValue = 0.0;
+    float amp = 1.0;
+
+    for(int i = 0; i < 8; i++) { // reduced iterations for perf
+        fractValue += valueNoise(uv, float(i + 1) * scale) * amp;
+        amp *= 0.5;
+    }
+
+    fractValue = fractValue * 0.5 + 0.5;
+
+    // animated threshold
+    float cutoff = smoothstep(progress - 0.1, progress + 0.1, fractValue);
+    cutoff = clamp(cutoff, 0.0, 1.0);
+      // if(progress==0.0) cutoff=1.0;
+    vec4 tex0 = texture2D(baseTexture, uv);
+
+    // 🔥 Blend with dissolveColor instead of another texture
+    vec3 blended = mix(tex0.rgb, dissolveColor, 1.0 - cutoff);
+
+    // vec4 col = mix(tex0, tex1, cutoff);
+
+    csm_DiffuseColor = vec4(blended, 1.0);
+}
 `}
         transparent
       />
@@ -62,17 +93,18 @@ export function DissolveMaterial({ map, mask, active }) {
   );
 
   // Animate dissolve when "active" changes
-  console.log(active);
+  // console.log(active);
   useEffect(() => {
     if (!matRef.current) return;
-    gsap.to(matRef.current.uniforms.progress, {
+    gsap.to(matRef.current.uniforms.progress,
+      {
       value: active ? 0 : 1,
-      duration: active ? 3 : 1,
-      // delay:1,
-      ease: "power2.inOut",
+      duration: active? 2 : 1.5,
+      delay: active ? 1 : 0,
+      ease: active? "power2.inOut": 'power3.out',
     });
   }, [active]);
-
+  // console.log(matRef.current.opacity)
   useFrame(() => {
     // console.log(matRef.current.uniforms.progress)
   });
